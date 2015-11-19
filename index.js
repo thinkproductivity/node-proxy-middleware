@@ -70,6 +70,14 @@ module.exports = function proxyMiddleware(options) {
       });
       myRes.pipe(resp);
     });
+    if (options.timeout) {
+      myReq.on('socket', function (socket) {
+        socket.setTimeout(options.timeout);
+        socket.on('timeout', function() {
+          myReq.abort();
+        });
+      });
+    }
     myReq.on('error', function (err) {
       next(err);
     });
